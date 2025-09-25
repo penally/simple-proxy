@@ -1,11 +1,11 @@
-import { setResponseHeaders } from 'h3';
+import { setResponseHeaders, getHeaders } from 'h3';
 
 // Check if MP4 proxying is disabled via environment variable
 const isMp4ProxyDisabled = () => process.env.DISABLE_MP4 === 'true';
 
 /**
- * Proxies MP4 files by serving the complete file with chunked streaming
- * This enables proper seeking since MP4 players need the full file structure
+ * Proxies MP4 files with support for chunked streaming and range requests
+ * This enables fast seeking by loading only requested byte ranges instead of the full file
  */
 async function proxyMP4(event: any) {
   const url = getQuery(event).url as string;
@@ -29,26 +29,37 @@ async function proxyMP4(event: any) {
   }
 
   try {
-    // Always fetch the complete MP4 file for proper seeking
+    // Check for Range header in the incoming request for chunked seeking
+    const requestHeaders = getHeaders(event);
+    const rangeHeader = requestHeaders['range'] || requestHeaders['Range'];
+
+    const fetchHeaders: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
+      ...(headers as Record<string, string>),
+    };
+
+    // Forward Range header if present for partial content requests
+    if (rangeHeader) {
+      fetchHeaders['Range'] = rangeHeader;
+    }
+
     const response = await globalThis.fetch(url, {
       method: 'GET',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
-        ...(headers as HeadersInit),
-      }
+      headers: fetchHeaders,
     });
 
-    if (!response.ok) {
+    if (!response.ok && response.status !== 206) {
       throw new Error(`Failed to fetch MP4: ${response.status} ${response.statusText}`);
     }
 
     const contentLength = parseInt(response.headers.get('content-length') || '0', 10);
+    const contentRange = response.headers.get('content-range');
+    const isPartialContent = response.status === 206;
 
-    // Set headers for complete MP4 file with seeking support
-    setResponseHeaders(event, {
+    // Set appropriate headers based on whether this is a partial content response
+    const responseHeaders: Record<string, string> = {
       'Content-Type': 'video/mp4',
-      'Content-Length': contentLength.toString(),
-      'Accept-Ranges': 'bytes', // Advertise seeking support
+      'Accept-Ranges': 'bytes',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
@@ -56,12 +67,23 @@ async function proxyMP4(event: any) {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0',
-      'Transfer-Encoding': 'chunked', // Enable chunked transfer for streaming
-    });
+    };
 
-    setResponseStatus(event, 200); // Always return 200 OK for complete file
+    if (isPartialContent) {
+      // Partial content response
+      responseHeaders['Content-Range'] = contentRange || '';
+      responseHeaders['Content-Length'] = contentLength.toString();
+      setResponseStatus(event, 206);
+    } else {
+      // Full content response
+      responseHeaders['Content-Length'] = contentLength.toString();
+      responseHeaders['Transfer-Encoding'] = 'chunked';
+      setResponseStatus(event, 200);
+    }
 
-    // Return the response body as a stream for chunked transfer
+    setResponseHeaders(event, responseHeaders);
+
+    // Return the response body as a stream
     return response.body;
   } catch (error: any) {
     console.error('Error proxying MP4:', error);
@@ -106,25 +128,37 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+      // Check for Range header in HEAD request
+      const requestHeaders = getHeaders(event);
+      const rangeHeader = requestHeaders['range'] || requestHeaders['Range'];
+
+      const fetchHeaders: Record<string, string> = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
+        ...(headers as Record<string, string>),
+      };
+
+      // Forward Range header for HEAD requests if present
+      if (rangeHeader) {
+        fetchHeaders['Range'] = rangeHeader;
+      }
+
       // Get content info for HEAD request
       const headResponse = await globalThis.fetch(url, {
         method: 'HEAD',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
-          ...(headers as HeadersInit),
-        }
+        headers: fetchHeaders,
       });
 
-      if (!headResponse.ok) {
+      if (!headResponse.ok && headResponse.status !== 206) {
         throw new Error(`Failed to fetch MP4 headers: ${headResponse.status} ${headResponse.statusText}`);
       }
 
       const contentLength = parseInt(headResponse.headers.get('content-length') || '0', 10);
+      const contentRange = headResponse.headers.get('content-range');
+      const isPartialContent = headResponse.status === 206;
 
-      // Return headers for HEAD request indicating full file availability
-      setResponseHeaders(event, {
+      // Set appropriate headers based on whether this is a partial content response
+      const responseHeaders: Record<string, string> = {
         'Content-Type': 'video/mp4',
-        'Content-Length': contentLength.toString(),
         'Accept-Ranges': 'bytes',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': '*',
@@ -133,9 +167,18 @@ export default defineEventHandler(async (event) => {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0',
-      });
+      };
 
-      setResponseStatus(event, 200); // Always 200 for complete file info
+      if (isPartialContent && contentRange) {
+        responseHeaders['Content-Range'] = contentRange;
+        responseHeaders['Content-Length'] = contentLength.toString();
+        setResponseStatus(event, 206);
+      } else {
+        responseHeaders['Content-Length'] = contentLength.toString();
+        setResponseStatus(event, 200);
+      }
+
+      setResponseHeaders(event, responseHeaders);
       return ''; // Empty body for HEAD request
     } catch (error: any) {
       console.error('Error handling HEAD request:', error);
