@@ -67,15 +67,15 @@ export default defineEventHandler(async (event) => {
     }
     
     setResponseHeaders(event, {
-      'Content-Type': 'video/mp2t',
+      'Content-Type': response.headers.get('content-type') || 'video/mp2t',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Methods': '*',
       'Cache-Control': 'public, max-age=3600' // Allow caching of TS segments
     });
-    
-    // Return the binary data directly
-    return new Uint8Array(await response.arrayBuffer());
+
+    // Return the response body as a stream to avoid memory buffering
+    return response.body;
   } catch (error: any) {
     console.error('Error proxying TS file:', error);
     return sendError(event, createError({

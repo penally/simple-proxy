@@ -130,8 +130,8 @@ async function proxyMP4(event: any) {
 
     setResponseHeaders(event, responseHeaders);
 
-    // Stream the response body directly without buffering
-    return new Uint8Array(await response.arrayBuffer());
+    // Return the response body as a stream to avoid memory buffering
+    return response.body;
   } catch (error: any) {
     console.error('Error proxying MP4:', error);
     return sendError(event, createError({
