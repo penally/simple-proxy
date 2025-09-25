@@ -84,11 +84,6 @@ async function proxyMP4(event: any) {
         end = range.end;
         isPartial = true;
       }
-    } else if (rangeHeader && acceptRanges !== 'bytes') {
-      // Server doesn't support ranges, but client requested one
-      // Return the full file instead of failing
-      console.log(`Server doesn't support ranges but client requested: ${rangeHeader}. Returning full file.`);
-      isPartial = false;
     }
 
     // Prepare request headers for the actual fetch
@@ -113,40 +108,30 @@ async function proxyMP4(event: any) {
 
     // Set appropriate headers for MP4 response
     const responseHeaders: Record<string, string> = {
-      'Content-Type': contentType,
+      'Content-Type': 'video/mp4', // Force video/mp4 for better seeking support
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-      'Accept-Ranges': 'bytes', // Always advertise bytes support for better CF compatibility
+      'Accept-Ranges': 'bytes', // Always advertise bytes support for seeking
     };
 
     if (isPartial) {
       const actualRange = response.headers.get('content-range');
       const actualLength = response.headers.get('content-length');
 
-      // Use the actual range from the response if available, otherwise construct it
       responseHeaders['Content-Range'] = actualRange || `bytes ${start}-${end}/${contentLength}`;
       responseHeaders['Content-Length'] = actualLength || (end - start + 1).toString();
 
-      // Cloudflare-specific headers to prevent caching issues with range requests
+      // Prevent caching of range requests to ensure proper seeking
       responseHeaders['Cache-Control'] = 'no-cache, no-store, must-revalidate';
       responseHeaders['Pragma'] = 'no-cache';
       responseHeaders['Expires'] = '0';
 
-      // Ensure ETag is passed through for proper cache validation
-      const etag = response.headers.get('etag');
-      if (etag) {
-        responseHeaders['ETag'] = etag;
-      }
-
-      // Additional headers to ensure proper seeking behavior
-      responseHeaders['X-Content-Type-Options'] = 'nosniff';
-
       setResponseStatus(event, 206); // Partial Content
     } else {
       responseHeaders['Content-Length'] = contentLength.toString();
-      // Allow caching for complete MP4 files (but not ranges)
-      responseHeaders['Cache-Control'] = 'public, max-age=3600';
+      // Allow light caching for complete MP4 files
+      responseHeaders['Cache-Control'] = 'public, max-age=300';
     }
 
     setResponseHeaders(event, responseHeaders);
@@ -171,6 +156,67 @@ export default defineEventHandler(async (event) => {
       statusCode: 404,
       statusMessage: 'MP4 proxying is disabled'
     }));
+  }
+
+  // Handle HEAD requests for seeking support
+  if (event.method === 'HEAD') {
+    const url = getQuery(event).url as string;
+    const headersParam = getQuery(event).headers as string;
+
+    if (!url) {
+      return sendError(event, createError({
+        statusCode: 400,
+        statusMessage: 'URL parameter is required'
+      }));
+    }
+
+    let headers = {};
+    try {
+      headers = headersParam ? JSON.parse(headersParam) : {};
+    } catch (e) {
+      return sendError(event, createError({
+        statusCode: 400,
+        statusMessage: 'Invalid headers format'
+      }));
+    }
+
+    try {
+      // HEAD request to check content info without downloading
+      const headResponse = await globalThis.fetch(url, {
+        method: 'HEAD',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0',
+          ...(headers as HeadersInit),
+        }
+      });
+
+      if (!headResponse.ok) {
+        throw new Error(`Failed to fetch MP4 headers: ${headResponse.status} ${headResponse.statusText}`);
+      }
+
+      const contentLength = parseInt(headResponse.headers.get('content-length') || '0', 10);
+      const contentType = headResponse.headers.get('content-type') || 'video/mp4';
+      const acceptRanges = headResponse.headers.get('accept-ranges') || 'bytes';
+
+      // Return headers for HEAD request
+      setResponseHeaders(event, {
+        'Content-Type': 'video/mp4',
+        'Content-Length': contentLength.toString(),
+        'Accept-Ranges': 'bytes',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        'Cache-Control': 'public, max-age=300',
+      });
+
+      return ''; // Empty body for HEAD request
+    } catch (error: any) {
+      console.error('Error handling HEAD request:', error);
+      return sendError(event, createError({
+        statusCode: error.response?.status || 500,
+        statusMessage: error.message || 'Error proxying MP4 HEAD request'
+      }));
+    }
   }
 
   return await proxyMP4(event);
