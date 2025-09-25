@@ -84,6 +84,11 @@ async function proxyMP4(event: any) {
         end = range.end;
         isPartial = true;
       }
+    } else if (rangeHeader && acceptRanges !== 'bytes') {
+      // Server doesn't support ranges, but client requested one
+      // Return the full file instead of failing
+      console.log(`Server doesn't support ranges but client requested: ${rangeHeader}. Returning full file.`);
+      isPartial = false;
     }
 
     // Prepare request headers for the actual fetch
@@ -112,15 +117,31 @@ async function proxyMP4(event: any) {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-      'Accept-Ranges': acceptRanges,
+      'Accept-Ranges': 'bytes', // Always advertise bytes support for better CF compatibility
     };
 
     if (isPartial) {
       const actualRange = response.headers.get('content-range');
       const actualLength = response.headers.get('content-length');
 
+      // Use the actual range from the response if available, otherwise construct it
       responseHeaders['Content-Range'] = actualRange || `bytes ${start}-${end}/${contentLength}`;
       responseHeaders['Content-Length'] = actualLength || (end - start + 1).toString();
+
+      // Cloudflare-specific headers to prevent caching issues with range requests
+      responseHeaders['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+      responseHeaders['Pragma'] = 'no-cache';
+      responseHeaders['Expires'] = '0';
+
+      // Ensure ETag is passed through for proper cache validation
+      const etag = response.headers.get('etag');
+      if (etag) {
+        responseHeaders['ETag'] = etag;
+      }
+
+      // Additional headers to ensure proper seeking behavior
+      responseHeaders['X-Content-Type-Options'] = 'nosniff';
+
       setResponseStatus(event, 206); // Partial Content
     } else {
       responseHeaders['Content-Length'] = contentLength.toString();
