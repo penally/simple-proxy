@@ -1,0 +1,11 @@
+{
+  "DISABLE_CACHE": true,
+  "DISABLE_PROXY": true,
+  "DISABLE_M3U8": false,
+  "DISABLE_MP4": false,
+  "ENABLE_REDIS": false,
+  "REDIS_DB": 0,
+  "TURNSTILE_SECRET": "",
+  "JWT_SECRET": "",
+  "REQ_DEBUG": true
+}

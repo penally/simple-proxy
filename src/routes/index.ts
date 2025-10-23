@@ -10,6 +10,9 @@ import {
   setTokenHeader,
 } from '@/utils/turnstile';
 import { sendJson } from '@/utils/sending';
+import { specificProxyRequest } from '@/utils/proxy';
+import { cacheAnalytics, redisCache } from '@/utils/redis-cache';
+import config from '@/utils/config';
 
 export default defineEventHandler(async (event) => {
   // Handle preflight CORS requests
@@ -26,6 +29,30 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 405,
       statusMessage: 'Method Not Allowed',
+    });
+  }
+
+  // Cache stats endpoint
+  if (event.path === '/cache-stats') {
+    return await sendJson({
+      event,
+      status: 200,
+      data: {
+        cache: cacheAnalytics.getStats(),
+        redis: redisCache.getStats(),
+        timestamp: new Date().toISOString()
+      },
+    });
+  }
+
+  // Check if proxying is disabled via environment variable
+  if (config.DISABLE_PROXY) {
+    return await sendJson({
+      event,
+      status: 404,
+      data: {
+        error: 'Proxying is disabled',
+      },
     });
   }
 
@@ -65,7 +92,7 @@ export default defineEventHandler(async (event) => {
       fetchOptions: {
         redirect: 'follow',
         headers: getProxyHeaders(event.headers),
-        body,
+        body: body as BodyInit | null | undefined,
       },
       onResponse(outputEvent, response) {
         const headers = getAfterResponseHeaders(response.headers, response.url);

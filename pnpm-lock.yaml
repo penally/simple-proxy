@@ -20,6 +20,9 @@ importers:
       nitropack:
         specifier: ^2.11.9
         version: 2.11.9(@netlify/blobs@8.2.0)
+      redis:
+        specifier: ^4.6.13
+        version: 4.7.1
     devDependencies:
       '@rollup/wasm-node':
         specifier: ^4.40.0
@@ -30,6 +33,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^6.21.0
         version: 6.21.0(eslint@8.57.1)(typescript@5.8.3)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
@@ -622,6 +628,35 @@ packages:
     resolution: {integrity: sha512-aQypoot0HPSJa6gDPEPTntc1GT6QINrSbgRlRhadGW2WaYqUK3tK4Bw9SBMZXhmxd3GeAlZjVcODHgiu+THY7A==}
     engines: {node: '>=18'}
 
+  '@redis/bloom@1.2.0':
+    resolution: {integrity: sha512-HG2DFjYKbpNmVXsa0keLHp/3leGJz1mjh09f2RLGGLQZzSHpkmZWuwJbAvo3QcRY8p80m5+ZdXZdYOSBLlp7Cg==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/client@1.6.1':
+    resolution: {integrity: sha512-/KCsg3xSlR+nCK8/8ZYSknYxvXHwubJrU82F3Lm1Fp6789VQ0/3RJKfsmRXjqfaTA++23CvC3hqmqe/2GEt6Kw==}
+    engines: {node: '>=14'}
+
+  '@redis/graph@1.1.1':
+    resolution: {integrity: sha512-FEMTcTHZozZciLRl6GiiIB4zGm5z5F3F6a6FZCyrfxdKOhFlGkiAqlexWMBzCi4DcRoyiOsuLfW+cjlGWyExOw==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/json@1.0.7':
+    resolution: {integrity: sha512-6UyXfjVaTBTJtKNG4/9Z8PSpKE6XgSyEb8iwaqDcy+uKrd/DGYHTWkUdnQDyzm727V7p21WUMhsqz5oy65kPcQ==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/search@1.2.0':
+    resolution: {integrity: sha512-tYoDBbtqOVigEDMAcTGsRlMycIIjwMCgD8eR2t0NANeQmgK/lvxNAvYyb6bZDD4frHRhIHkJu2TBRvB0ERkOmw==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/time-series@1.1.0':
+    resolution: {integrity: sha512-c1Q99M5ljsIuc4YdaCwfUEXsofakb9c8+Zse2qxTadu8TalLXuAESzLvFAvNVbkmSlvlzIQOLpBCmWI9wTOt+g==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
   '@rollup/plugin-alias@5.1.1':
     resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
     engines: {node: '>=14.0.0'}
@@ -699,6 +734,11 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
+  '@rollup/wasm-node@4.52.4':
+    resolution: {integrity: sha512-QME8thp2j0GvRu/H8kz3uOawi45rexNIys38kITnMYp8Wl+gyeoIIuKyw8y0Lrq6xSAXgGCoqDyHD+m0wX1jnQ==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
+    hasBin: true
+
   '@sindresorhus/is@7.0.1':
     resolution: {integrity: sha512-QWLl2P+rsCJeofkDNIT3WFmb6NrRud1SUYW8dIhXK/46XFV8Q/g7Bsvib0Askb0reRLe+WYPeeE+l5cH7SlkuQ==}
     engines: {node: '>=18'}
@@ -715,6 +755,9 @@ packages:
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
+
+  '@types/estree@1.0.8':
+    resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -1249,6 +1292,11 @@ packages:
     resolution: {integrity: sha512-onMB0OkDjkXunhdW9htFjEhqrD54+M94i6ackoUkjHKbRnXdyEyKRelp4nJ1kAz32+s27jP1FsebpJCVl0BsvA==}
     engines: {node: '>=18.0'}
 
+  cross-env@7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
+
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -1780,6 +1828,10 @@ packages:
     resolution: {integrity: sha512-+5J6MS/5XksCuXq++uFRsnUd7Ovu1XenbeuIuNRJxYWjgQbPuFhT14lAvsWfqfAmnwluf1OwMjz39HjfLPci0Q==}
     engines: {node: '>=10'}
     deprecated: This package is no longer supported.
+
+  generic-pool@3.9.0:
+    resolution: {integrity: sha512-hymDOu5B53XvN4QT9dBmZxPX4CWhBPPLguTZ9MMFeFa/Kg0xWVfylOVNlJji/E7yTZWFd/q9GO5TxDLq156D7g==}
+    engines: {node: '>= 4'}
 
   get-amd-module-type@5.0.1:
     resolution: {integrity: sha512-jb65zDeHyDjFR1loOVk0HQGM5WNwoGB8aLWy3LKCieMKol0/ProHkhO2X1JxojuN10vbz1qNn09MJ7tNp7qMzw==}
@@ -2796,6 +2848,9 @@ packages:
     resolution: {integrity: sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==}
     engines: {node: '>=4'}
 
+  redis@4.7.1:
+    resolution: {integrity: sha512-S1bJDnqLftzHXHP8JsT5II/CtHWQrASX5K96REjWjlmWKrviSOLWmM7QnRLstAWsu1VBBV1ffV6DzCvxNP0UJQ==}
+
   reflect.getprototypeof@1.0.10:
     resolution: {integrity: sha512-00o4I+DVrefhv+nX0ulyi3biSHCPDe+yLv5o/p6d/UVlirijB8E16FtfwSAi4g3tcqrQ4lRAqQSoFEZJehYEcw==}
     engines: {node: '>= 0.4'}
@@ -3779,12 +3834,12 @@ snapshots:
       uuid: 11.1.0
       write-file-atomic: 6.0.0
 
-  '@netlify/functions@3.1.2(@rollup/wasm-node@4.40.0)':
+  '@netlify/functions@3.1.2(@rollup/wasm-node@4.52.4)':
     dependencies:
       '@netlify/blobs': 8.2.0
       '@netlify/dev-utils': 1.1.0
       '@netlify/serverless-functions-api': 1.33.0
-      '@netlify/zip-it-and-ship-it': 9.43.1(@rollup/wasm-node@4.40.0)
+      '@netlify/zip-it-and-ship-it': 9.43.1(@rollup/wasm-node@4.52.4)
       cron-parser: 4.9.0
       decache: 4.6.2
       extract-zip: 2.0.1
@@ -3809,13 +3864,13 @@ snapshots:
 
   '@netlify/serverless-functions-api@1.37.0': {}
 
-  '@netlify/zip-it-and-ship-it@9.43.1(@rollup/wasm-node@4.40.0)':
+  '@netlify/zip-it-and-ship-it@9.43.1(@rollup/wasm-node@4.52.4)':
     dependencies:
       '@babel/parser': 7.27.0
       '@babel/types': 7.26.9
       '@netlify/binary-info': 1.0.0
       '@netlify/serverless-functions-api': 1.37.0
-      '@vercel/nft': 0.27.7(@rollup/wasm-node@4.40.0)
+      '@vercel/nft': 0.27.7(@rollup/wasm-node@4.52.4)
       archiver: 7.0.1
       common-path-prefix: 3.0.0
       cp-file: 10.0.0
@@ -3946,13 +4001,39 @@ snapshots:
 
   '@poppinss/exception@1.2.1': {}
 
-  '@rollup/plugin-alias@5.1.1(@rollup/wasm-node@4.40.0)':
-    optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
-
-  '@rollup/plugin-commonjs@28.0.3(@rollup/wasm-node@4.40.0)':
+  '@redis/bloom@1.2.0(@redis/client@1.6.1)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@redis/client': 1.6.1
+
+  '@redis/client@1.6.1':
+    dependencies:
+      cluster-key-slot: 1.1.2
+      generic-pool: 3.9.0
+      yallist: 4.0.0
+
+  '@redis/graph@1.1.1(@redis/client@1.6.1)':
+    dependencies:
+      '@redis/client': 1.6.1
+
+  '@redis/json@1.0.7(@redis/client@1.6.1)':
+    dependencies:
+      '@redis/client': 1.6.1
+
+  '@redis/search@1.2.0(@redis/client@1.6.1)':
+    dependencies:
+      '@redis/client': 1.6.1
+
+  '@redis/time-series@1.1.0(@redis/client@1.6.1)':
+    dependencies:
+      '@redis/client': 1.6.1
+
+  '@rollup/plugin-alias@5.1.1(@rollup/wasm-node@4.52.4)':
+    optionalDependencies:
+      rollup: '@rollup/wasm-node@4.52.4'
+
+  '@rollup/plugin-commonjs@28.0.3(@rollup/wasm-node@4.52.4)':
+    dependencies:
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
       commondir: 1.0.1
       estree-walker: 2.0.2
       fdir: 6.4.4(picomatch@4.0.2)
@@ -3960,58 +4041,64 @@ snapshots:
       magic-string: 0.30.17
       picomatch: 4.0.2
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
-  '@rollup/plugin-inject@5.0.5(@rollup/wasm-node@4.40.0)':
+  '@rollup/plugin-inject@5.0.5(@rollup/wasm-node@4.52.4)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
       estree-walker: 2.0.2
       magic-string: 0.30.17
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
-  '@rollup/plugin-json@6.1.0(@rollup/wasm-node@4.40.0)':
+  '@rollup/plugin-json@6.1.0(@rollup/wasm-node@4.52.4)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
-  '@rollup/plugin-node-resolve@16.0.1(@rollup/wasm-node@4.40.0)':
+  '@rollup/plugin-node-resolve@16.0.1(@rollup/wasm-node@4.52.4)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
       resolve: 1.22.10
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
-  '@rollup/plugin-replace@6.0.2(@rollup/wasm-node@4.40.0)':
+  '@rollup/plugin-replace@6.0.2(@rollup/wasm-node@4.52.4)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
       magic-string: 0.30.17
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
-  '@rollup/plugin-terser@0.4.4(@rollup/wasm-node@4.40.0)':
+  '@rollup/plugin-terser@0.4.4(@rollup/wasm-node@4.52.4)':
     dependencies:
       serialize-javascript: 6.0.2
       smob: 1.5.0
       terser: 5.39.0
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
-  '@rollup/pluginutils@5.1.4(@rollup/wasm-node@4.40.0)':
+  '@rollup/pluginutils@5.1.4(@rollup/wasm-node@4.52.4)':
     dependencies:
       '@types/estree': 1.0.7
       estree-walker: 2.0.2
       picomatch: 4.0.2
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
   '@rollup/wasm-node@4.40.0':
     dependencies:
       '@types/estree': 1.0.7
+    optionalDependencies:
+      fsevents: 2.3.3
+
+  '@rollup/wasm-node@4.52.4':
+    dependencies:
+      '@types/estree': 1.0.8
     optionalDependencies:
       fsevents: 2.3.3
 
@@ -4027,6 +4114,8 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.7': {}
+
+  '@types/estree@1.0.8': {}
 
   '@types/json-schema@7.0.15': {}
 
@@ -4209,10 +4298,10 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.6.0':
     optional: true
 
-  '@vercel/nft@0.27.7(@rollup/wasm-node@4.40.0)':
+  '@vercel/nft@0.27.7(@rollup/wasm-node@4.52.4)':
     dependencies:
       '@mapbox/node-pre-gyp': 1.0.11
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
       acorn: 8.14.1
       acorn-import-attributes: 1.9.5(acorn@8.14.1)
       async-sema: 3.1.1
@@ -4228,10 +4317,10 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/nft@0.29.2(@rollup/wasm-node@4.40.0)':
+  '@vercel/nft@0.29.2(@rollup/wasm-node@4.52.4)':
     dependencies:
       '@mapbox/node-pre-gyp': 2.0.0
-      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.40.0)
+      '@rollup/pluginutils': 5.1.4(@rollup/wasm-node@4.52.4)
       acorn: 8.14.1
       acorn-import-attributes: 1.9.5(acorn@8.14.1)
       async-sema: 3.1.1
@@ -4607,6 +4696,10 @@ snapshots:
       luxon: 3.6.1
 
   croner@9.0.0: {}
+
+  cross-env@7.0.3:
+    dependencies:
+      cross-spawn: 7.0.6
 
   cross-spawn@7.0.6:
     dependencies:
@@ -5079,7 +5172,7 @@ snapshots:
 
   estree-walker@3.0.3:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
 
   esutils@2.0.3: {}
 
@@ -5250,6 +5343,8 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wide-align: 1.1.5
+
+  generic-pool@3.9.0: {}
 
   get-amd-module-type@5.0.1:
     dependencies:
@@ -5898,15 +5993,15 @@ snapshots:
   nitropack@2.11.9(@netlify/blobs@8.2.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
-      '@netlify/functions': 3.1.2(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-alias': 5.1.1(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-commonjs': 28.0.3(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-inject': 5.0.5(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-json': 6.1.0(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-node-resolve': 16.0.1(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-replace': 6.0.2(@rollup/wasm-node@4.40.0)
-      '@rollup/plugin-terser': 0.4.4(@rollup/wasm-node@4.40.0)
-      '@vercel/nft': 0.29.2(@rollup/wasm-node@4.40.0)
+      '@netlify/functions': 3.1.2(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-alias': 5.1.1(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-commonjs': 28.0.3(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-inject': 5.0.5(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-json': 6.1.0(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-node-resolve': 16.0.1(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-replace': 6.0.2(@rollup/wasm-node@4.52.4)
+      '@rollup/plugin-terser': 0.4.4(@rollup/wasm-node@4.52.4)
+      '@vercel/nft': 0.29.2(@rollup/wasm-node@4.52.4)
       archiver: 7.0.1
       c12: 3.0.3(magicast@0.3.5)
       chokidar: 4.0.3
@@ -5948,8 +6043,8 @@ snapshots:
       pkg-types: 2.1.0
       pretty-bytes: 6.1.1
       radix3: 1.1.2
-      rollup: '@rollup/wasm-node@4.40.0'
-      rollup-plugin-visualizer: 5.14.0(@rollup/wasm-node@4.40.0)
+      rollup: '@rollup/wasm-node@4.52.4'
+      rollup-plugin-visualizer: 5.14.0(@rollup/wasm-node@4.52.4)
       scule: 1.3.0
       semver: 7.7.1
       serve-placeholder: 2.0.2
@@ -6364,6 +6459,15 @@ snapshots:
     dependencies:
       redis-errors: 1.2.0
 
+  redis@4.7.1:
+    dependencies:
+      '@redis/bloom': 1.2.0(@redis/client@1.6.1)
+      '@redis/client': 1.6.1
+      '@redis/graph': 1.1.1(@redis/client@1.6.1)
+      '@redis/json': 1.0.7(@redis/client@1.6.1)
+      '@redis/search': 1.2.0(@redis/client@1.6.1)
+      '@redis/time-series': 1.1.0(@redis/client@1.6.1)
+
   reflect.getprototypeof@1.0.10:
     dependencies:
       call-bind: 1.0.8
@@ -6414,14 +6518,14 @@ snapshots:
     dependencies:
       glob: 7.2.3
 
-  rollup-plugin-visualizer@5.14.0(@rollup/wasm-node@4.40.0):
+  rollup-plugin-visualizer@5.14.0(@rollup/wasm-node@4.52.4):
     dependencies:
       open: 8.4.2
       picomatch: 4.0.2
       source-map: 0.7.4
       yargs: 17.7.2
     optionalDependencies:
-      rollup: '@rollup/wasm-node@4.40.0'
+      rollup: '@rollup/wasm-node@4.52.4'
 
   run-parallel@1.2.0:
     dependencies:

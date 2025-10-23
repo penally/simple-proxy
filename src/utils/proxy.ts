@@ -5,6 +5,7 @@ import {
   getProxyRequestHeaders,
   RequestHeaders,
 } from 'h3';
+import config from './config';
 
 const PayloadMethods = new Set(['PATCH', 'POST', 'PUT', 'DELETE']);
 
@@ -80,7 +81,7 @@ export async function specificProxyRequest(
     opts.headers,
   );
   const headerObj = Object.fromEntries([...(fetchHeaders.entries as any)()]);
-  if (process.env.REQ_DEBUG === 'true') {
+  if (config.REQ_DEBUG) {
     console.log({
       type: 'request',
       method,

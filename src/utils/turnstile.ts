@@ -1,9 +1,10 @@
 import { H3Event, EventHandlerRequest } from 'h3';
 import { SignJWT, jwtVerify } from 'jose';
 import { getIp } from '@/utils/ip';
+import config from './config';
 
-const turnstileSecret = process.env.TURNSTILE_SECRET ?? null;
-const jwtSecret = process.env.JWT_SECRET ?? null;
+const turnstileSecret = config.TURNSTILE_SECRET || null;
+const jwtSecret = config.JWT_SECRET || null;
 
 const tokenHeader = 'X-Token';
 const jwtPrefix = 'jwt|';
